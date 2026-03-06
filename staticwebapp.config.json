@@ -1,0 +1,13 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "redirect": "/jobs/",
+      "statusCode": 302
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/jobs/index.html",
+    "exclude": ["/jobs/*", "/assets/*"]
+  }
+}
