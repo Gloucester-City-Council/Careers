@@ -535,10 +535,9 @@
 
   /* -------------------------------------------------------------------
      Configuration
-     To use a live feed instead of the local XML file, replace FEED_URL
-     with the actual URL provided by your ATS provider (Vacancy Filler /
-     HireRoad). Note: the live URL must support CORS for client-side fetch.
-     Example: 'https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055'
+     The page reads jobs-feed.xml which is kept up-to-date by the
+     refresh-jobs.yml GitHub Actions workflow (runs every 4 hours).
+     Only jobs with /GloucesterCity/ in their applyURL are displayed.
   ------------------------------------------------------------------- */
   const FEED_URL = './jobs-feed.xml';
 
@@ -669,6 +668,10 @@
         return el ? el.textContent.trim() : '';
       };
 
+      // Only show Gloucester City Council jobs — identified by /GloucesterCity/ in the apply URL
+      const applyURL = getText('applyURL');
+      if (!applyURL.includes('/GloucesterCity/')) return;
+
       const descRaw     = getText('description');
       const closingRaw  = getText('type');        // <type> = closing date
       const postedRaw   = getText('date');
@@ -685,7 +688,7 @@
         closingRaw:  closingRaw,
         closingDate: closingDate,
         postedDate:  postedDate,
-        applyURL:    getText('applyURL'),
+        applyURL:    applyURL,
         salary:      descParsed.salary,
         hours:       descParsed.hours,
       });

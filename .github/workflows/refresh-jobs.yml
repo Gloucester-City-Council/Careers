@@ -1,0 +1,25 @@
+name: Refresh Jobs Feed
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'   # every 4 hours
+  workflow_dispatch:          # allow manual trigger from GitHub Actions UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch live jobs feed
+        run: |
+          curl -f --retry 3 --retry-delay 5 -o jobs/jobs-feed.xml \
+            "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add jobs/jobs-feed.xml
+          git diff --cached --quiet || git commit -m "chore: refresh jobs feed [skip ci]"
+          git push
