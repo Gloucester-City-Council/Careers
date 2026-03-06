@@ -5,6 +5,9 @@ on:
     - cron: '0 */4 * * *'   # every 4 hours
   workflow_dispatch:          # allow manual trigger from GitHub Actions UI
 
+permissions:
+  contents: write             # required to commit and push the updated XML
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -13,8 +16,19 @@ jobs:
 
       - name: Fetch live jobs feed
         run: |
-          curl -f --retry 3 --retry-delay 5 -o jobs/jobs-feed.xml \
+          curl -f --retry 3 --retry-delay 5 -o /tmp/jobs-feed-new.xml \
             "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055"
+
+      - name: Validate feed before overwriting
+        run: |
+          # Must be valid XML and contain at least one <job> element
+          if ! grep -q "<job>" /tmp/jobs-feed-new.xml; then
+            echo "ERROR: fetched file contains no <job> elements — aborting to preserve existing feed"
+            cat /tmp/jobs-feed-new.xml
+            exit 1
+          fi
+          echo "Validation passed — $(grep -c '<job>' /tmp/jobs-feed-new.xml) job(s) found"
+          cp /tmp/jobs-feed-new.xml jobs/jobs-feed.xml
 
       - name: Commit if changed
         run: |
