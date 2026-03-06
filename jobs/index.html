@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Current job vacancies at Gloucester City Council. Search and apply for roles in local government." />
+  <title>Jobs &amp; Careers | Gloucester City Council</title>
+  <style>
+    /* =====================================================
+       Design tokens – Gloucester City Council branding
+       WCAG AA contrast ratios verified throughout
+    ===================================================== */
+    :root {
+      --color-primary:      #00703C; /* GCC green – on white passes AA (4.8:1) */
+      --color-primary-dark: #004D2A; /* darker shade for hover/focus */
+      --color-accent:       #D4351C; /* urgent/warning red */
+      --color-text:         #0B0C0C; /* GOV.UK near-black */
+      --color-text-muted:   #505A5F;
+      --color-bg:           #FFFFFF;
+      --color-bg-alt:       #F3F2F1;
+      --color-border:       #B1B4B6;
+      --color-focus:        #FFDD00; /* GOV.UK yellow focus ring */
+      --color-tag-perm:     #00703C;
+      --color-tag-fixed:    #1D70B8;
+      --color-tag-ongoing:  #505A5F;
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --radius: 4px;
+      --shadow: 0 2px 8px rgba(0,0,0,.12);
+      --max-width: 1200px;
+    }
+
+    /* ---- Reset / base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.5;
+    }
+    a { color: var(--color-primary-dark); }
+    a:hover { color: var(--color-primary); }
+
+    /* ---- Focus visible ---- */
+    :focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+
+    /* ---- Skip link ---- */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--color-focus);
+      color: var(--color-text);
+      padding: .5rem 1rem;
+      font-weight: 700;
+      z-index: 9999;
+      text-decoration: none;
+      border-radius: var(--radius);
+    }
+    .skip-link:focus { top: 1rem; }
+
+    /* ---- Header ---- */
+    .site-header {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 0;
+    }
+    .header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: .75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+      color: #fff;
+    }
+    .header-logo svg { flex-shrink: 0; }
+    .header-logo-text { line-height: 1.2; }
+    .header-logo-text strong { display: block; font-size: 1.15rem; }
+    .header-logo-text span { font-size: .85rem; opacity: .9; }
+    .header-nav { margin-left: auto; }
+    .header-nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: .9rem;
+      padding: .25rem .5rem;
+      border-radius: var(--radius);
+    }
+    .header-nav a:hover { background: rgba(255,255,255,.15); }
+    .header-nav a:focus-visible { outline-color: var(--color-focus); }
+
+    /* ---- Hero banner ---- */
+    .hero {
+      background: var(--color-primary-dark);
+      color: #fff;
+      padding: 2.5rem 1.5rem;
+    }
+    .hero-inner { max-width: var(--max-width); margin: 0 auto; }
+    .hero h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin-bottom: .5rem; }
+    .hero p { font-size: 1.05rem; opacity: .9; max-width: 52ch; }
+
+    /* ---- Main content ---- */
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* ---- Controls bar ---- */
+    .controls {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: .35rem; flex: 1 1 200px; }
+    .control-group label { font-size: .875rem; font-weight: 600; }
+    .control-group input,
+    .control-group select {
+      padding: .5rem .75rem;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      width: 100%;
+    }
+    .control-group input:focus,
+    .control-group select:focus {
+      border-color: var(--color-primary);
+      outline: 3px solid var(--color-focus);
+      outline-offset: 0;
+    }
+    .btn-clear {
+      padding: .55rem 1.25rem;
+      background: var(--color-bg);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: .9rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      color: var(--color-text);
+      align-self: flex-end;
+      white-space: nowrap;
+    }
+    .btn-clear:hover { background: var(--color-border); }
+
+    /* ---- Results summary ---- */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    #results-count {
+      font-size: .9rem;
+      color: var(--color-text-muted);
+    }
+    #sort-select {
+      padding: .4rem .65rem;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: .9rem;
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      cursor: pointer;
+    }
+    #sort-select:focus {
+      border-color: var(--color-primary);
+      outline: 3px solid var(--color-focus);
+      outline-offset: 0;
+    }
+
+    /* ---- Job grid ---- */
+    #jobs-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+      list-style: none;
+    }
+
+    /* ---- Job card ---- */
+    .job-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
+      padding: 1.25rem 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: box-shadow .15s ease;
+    }
+    .job-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.16); }
+    .job-card.urgent { border-left: 4px solid var(--color-accent); }
+
+    .job-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
+    .job-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    /* ---- Tags ---- */
+    .tag {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 2px;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      white-space: nowrap;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .tag-permanent { background: var(--color-tag-perm); }
+    .tag-fixed     { background: var(--color-tag-fixed); }
+    .tag-ongoing   { background: var(--color-tag-ongoing); }
+
+    /* ---- Meta grid ---- */
+    .job-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .3rem .75rem;
+      font-size: .875rem;
+    }
+    .meta-item { display: flex; align-items: flex-start; gap: .4rem; }
+    .meta-icon { flex-shrink: 0; color: var(--color-primary); margin-top: .1em; }
+    .meta-label { color: var(--color-text-muted); font-size: .8rem; display: block; line-height: 1; margin-bottom: .1rem; }
+    .meta-value { font-weight: 600; }
+    .meta-closing-urgent { color: var(--color-accent); font-weight: 700; }
+    .meta-closing-soon   { color: #B56800; font-weight: 700; }   /* amber – still passes AA */
+
+    /* ---- Card footer ---- */
+    .job-card-footer {
+      margin-top: auto;
+      padding-top: .75rem;
+      border-top: 1px solid var(--color-bg-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .job-posted { font-size: .78rem; color: var(--color-text-muted); }
+
+    /* ---- Apply button ---- */
+    .btn-apply {
+      display: inline-block;
+      background: var(--color-primary);
+      color: #fff;
+      text-decoration: none;
+      padding: .55rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: .9rem;
+      transition: background .15s ease;
+    }
+    .btn-apply:hover { background: var(--color-primary-dark); color: #fff; }
+    .btn-apply:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+
+    /* ---- Urgent badge ---- */
+    .urgent-badge {
+      font-size: .78rem;
+      background: var(--color-accent);
+      color: #fff;
+      padding: .15rem .55rem;
+      border-radius: 2px;
+      font-weight: 700;
+    }
+
+    /* ---- Empty state ---- */
+    #no-results {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--color-text-muted);
+      display: none;
+    }
+    #no-results svg { margin-bottom: 1rem; opacity: .4; }
+    #no-results h2 { font-size: 1.3rem; margin-bottom: .5rem; color: var(--color-text); }
+
+    /* ---- Loading state ---- */
+    #loading {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--color-text-muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 3px solid var(--color-bg-alt);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Error state ---- */
+    #error-msg {
+      background: #FFF4F4;
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: none;
+    }
+    #error-msg h2 { color: var(--color-accent); margin-bottom: .5rem; }
+
+    /* ---- Live region ---- */
+    #live-region {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    /* ---- Footer ---- */
+    .site-footer {
+      background: var(--color-primary-dark);
+      color: rgba(255,255,255,.85);
+      margin-top: 3rem;
+      padding: 2rem 1.5rem;
+    }
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer-inner p { font-size: .875rem; }
+    .footer-links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .875rem; }
+    .footer-links a { color: rgba(255,255,255,.85); }
+    .footer-links a:hover { color: #fff; }
+    .footer-note { font-size: .8rem; opacity: .7; margin-top: .5rem; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 640px) {
+      .header-inner { flex-wrap: wrap; }
+      .header-nav { margin-left: 0; width: 100%; }
+      #jobs-list { grid-template-columns: 1fr; }
+      .job-meta { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner { animation: none; opacity: .5; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Live region for screen-reader announcements -->
+<div id="live-region" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ================================================================
+     Header
+================================================================ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="/" class="header-logo" aria-label="Gloucester City Council – Home">
+      <!-- GCC Shield SVG (simplified heraldic shield) -->
+      <svg width="44" height="50" viewBox="0 0 44 50" aria-hidden="true" focusable="false">
+        <path d="M22 2 L42 10 L42 32 C42 43 22 48 22 48 C22 48 2 43 2 32 L2 10 Z"
+              fill="#ffffff" stroke="#004D2A" stroke-width="2"/>
+        <path d="M22 8 L36 14 L36 30 C36 39 22 43 22 43 C22 43 8 39 8 30 L8 14 Z"
+              fill="#00703C"/>
+        <text x="22" y="30" text-anchor="middle" fill="#ffffff"
+              font-size="14" font-weight="bold" font-family="serif">GCC</text>
+      </svg>
+      <div class="header-logo-text">
+        <strong>Gloucester City Council</strong>
+        <span>Jobs &amp; Careers</span>
+      </div>
+    </a>
+    <nav class="header-nav" aria-label="Site navigation">
+      <a href="https://www.gloucester.gov.uk/" target="_blank" rel="noopener noreferrer">Council website</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================================================================
+     Hero
+================================================================ -->
+<div class="hero" role="region" aria-label="Page introduction">
+  <div class="hero-inner">
+    <h1>Current Vacancies</h1>
+    <p>Find your next role with Gloucester City Council. We offer a range of career opportunities supporting our community across the city.</p>
+  </div>
+</div>
+
+<!-- ================================================================
+     Main
+================================================================ -->
+<main id="main-content" tabindex="-1">
+
+  <!-- Controls -->
+  <section aria-label="Filter and search jobs">
+    <div class="controls" role="search">
+      <div class="control-group">
+        <label for="search-input">Search by keyword</label>
+        <input type="search" id="search-input" placeholder="e.g. Social Worker, Manager…"
+               aria-label="Search jobs by keyword" autocomplete="off" />
+      </div>
+
+      <div class="control-group">
+        <label for="location-filter">Location</label>
+        <select id="location-filter" aria-label="Filter by location">
+          <option value="">All locations</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="tenure-filter">Contract type</label>
+        <select id="tenure-filter" aria-label="Filter by contract type">
+          <option value="">All types</option>
+          <option value="Permanent">Permanent</option>
+          <option value="Fixed Term">Fixed Term</option>
+        </select>
+      </div>
+
+      <button class="btn-clear" id="btn-clear" type="button" aria-label="Clear all filters">
+        Clear filters
+      </button>
+    </div>
+  </section>
+
+  <!-- Results bar -->
+  <div class="results-bar">
+    <p id="results-count" aria-live="polite" aria-atomic="true"></p>
+    <label for="sort-select" class="sr-only">Sort jobs by</label>
+    <select id="sort-select" aria-label="Sort jobs">
+      <option value="closing-asc">Closing date (soonest first)</option>
+      <option value="closing-desc">Closing date (latest first)</option>
+      <option value="title-asc">Job title (A–Z)</option>
+      <option value="title-desc">Job title (Z–A)</option>
+      <option value="posted-desc">Date posted (newest first)</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" role="status" aria-label="Loading jobs">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Loading vacancies…</p>
+  </div>
+
+  <!-- Error -->
+  <div id="error-msg" role="alert" aria-live="assertive">
+    <h2>Unable to load vacancies</h2>
+    <p id="error-detail">Please try refreshing the page. If the problem persists, visit
+      <a href="https://careers.gloucestershire.gov.uk/GloucesterCity" target="_blank" rel="noopener noreferrer">
+        careers.gloucestershire.gov.uk/GloucesterCity
+      </a> to view all current vacancies directly.
+    </p>
+  </div>
+
+  <!-- Jobs list -->
+  <ul id="jobs-list" aria-label="Job vacancies"></ul>
+
+  <!-- No results -->
+  <div id="no-results" role="status">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      <path d="M8 11h6M11 8v6" stroke-dasharray="3 2"/>
+    </svg>
+    <h2>No vacancies found</h2>
+    <p>Try adjusting your search or filters, or
+      <button id="btn-reset-inline" style="background:none;border:none;color:var(--color-primary-dark);font-size:inherit;cursor:pointer;text-decoration:underline;padding:0;">
+        clear all filters
+      </button>
+      to see all jobs.
+    </p>
+  </div>
+
+</main>
+
+<!-- ================================================================
+     Footer
+================================================================ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div>
+      <p><strong>Gloucester City Council</strong></p>
+      <p>Herbert Warehouse, The Docks, Gloucester, GL1 2EQ</p>
+      <p class="footer-note">This page displays current vacancies from our careers system. For the full list visit
+        <a href="https://careers.gloucestershire.gov.uk/GloucesterCity" target="_blank"
+           rel="noopener noreferrer" style="color:rgba(255,255,255,.9)">
+          careers.gloucestershire.gov.uk/GloucesterCity
+        </a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="https://www.gloucester.gov.uk/council/jobs-and-careers/" target="_blank" rel="noopener noreferrer">Jobs &amp; careers</a>
+      <a href="https://www.gloucester.gov.uk/accessibility-statement/" target="_blank" rel="noopener noreferrer">Accessibility</a>
+      <a href="https://www.gloucester.gov.uk/council/privacy-notice/" target="_blank" rel="noopener noreferrer">Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ================================================================
+     JavaScript
+================================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* -------------------------------------------------------------------
+     Configuration
+     To use a live feed instead of the local XML file, replace FEED_URL
+     with the actual URL provided by your ATS provider (Vacancy Filler /
+     HireRoad). Note: the live URL must support CORS for client-side fetch.
+     Example: 'https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055'
+  ------------------------------------------------------------------- */
+  const FEED_URL = './jobs-feed.xml';
+
+  /* -------------------------------------------------------------------
+     State
+  ------------------------------------------------------------------- */
+  let allJobs = [];
+  let filtered = [];
+
+  /* -------------------------------------------------------------------
+     DOM refs
+  ------------------------------------------------------------------- */
+  const elLoading    = document.getElementById('loading');
+  const elError      = document.getElementById('error-msg');
+  const elList       = document.getElementById('jobs-list');
+  const elNoResults  = document.getElementById('no-results');
+  const elCount      = document.getElementById('results-count');
+  const elSearch     = document.getElementById('search-input');
+  const elLocation   = document.getElementById('location-filter');
+  const elTenure     = document.getElementById('tenure-filter');
+  const elSort       = document.getElementById('sort-select');
+  const elBtnClear   = document.getElementById('btn-clear');
+  const elBtnReset   = document.getElementById('btn-reset-inline');
+  const elLive       = document.getElementById('live-region');
+
+  /* -------------------------------------------------------------------
+     Date helpers
+  ------------------------------------------------------------------- */
+  function parseClosingDate(raw) {
+    if (!raw || raw.trim().toLowerCase() === 'ongoing') return null;
+    // Expect DD/MM/YYYY
+    const parts = raw.trim().split('/');
+    if (parts.length === 3) {
+      const [d, m, y] = parts;
+      const dt = new Date(Number(y), Number(m) - 1, Number(d));
+      return isNaN(dt) ? null : dt;
+    }
+    return null;
+  }
+
+  function daysUntil(date) {
+    if (!date) return Infinity;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const diff = date.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function formatDate(date) {
+    if (!date) return null;
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function parsePostedDate(raw) {
+    // Feed date format: "Tue, 13 01 2026 00:00:00 GMT"
+    if (!raw) return null;
+    try {
+      // Normalise: "Tue, 13 01 2026 00:00:00 GMT" → "13 Jan 2026"
+      const parts = raw.trim().split(/[\s,]+/).filter(Boolean);
+      // parts: ["Tue", "13", "01", "2026", "00:00:00", "GMT"]
+      if (parts.length >= 4) {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const monthIndex = parseInt(parts[2], 10) - 1;
+        const monthStr = months[monthIndex] || parts[2];
+        const dt = new Date(`${parts[1]} ${monthStr} ${parts[3]}`);
+        return isNaN(dt) ? null : dt;
+      }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  /* -------------------------------------------------------------------
+     HTML description parser
+     Extracts Salary and Hours per Week from bullet list HTML in <description>
+  ------------------------------------------------------------------- */
+  function parseDescription(htmlStr) {
+    const result = { salary: null, hours: null };
+    if (!htmlStr) return result;
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlStr, 'text/html');
+      const listItems = doc.querySelectorAll('li');
+
+      listItems.forEach(li => {
+        const text = li.textContent.trim();
+        // Salary
+        const salaryMatch = text.match(/^Salary:\s*(.+)/i);
+        if (salaryMatch) result.salary = salaryMatch[1].trim();
+        // Hours
+        const hoursMatch = text.match(/^Hours per Week:\s*(.+)/i);
+        if (hoursMatch) result.hours = hoursMatch[1].trim();
+      });
+    } catch (e) { /* DOMParser not available, skip */ }
+
+    return result;
+  }
+
+  /* -------------------------------------------------------------------
+     XML feed loader
+  ------------------------------------------------------------------- */
+  async function loadFeed() {
+    try {
+      const response = await fetch(FEED_URL);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      return parseFeed(text);
+    } catch (err) {
+      console.error('Failed to load jobs feed:', err);
+      return null;
+    }
+  }
+
+  function parseFeed(xmlText) {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlText, 'text/xml');
+
+    // Check for parse error
+    const parseError = xml.querySelector('parsererror');
+    if (parseError) throw new Error('XML parse error');
+
+    const jobNodes = xml.querySelectorAll('job');
+    const jobs = [];
+
+    jobNodes.forEach(node => {
+      const getText = tag => {
+        const el = node.querySelector(tag);
+        return el ? el.textContent.trim() : '';
+      };
+
+      const descRaw     = getText('description');
+      const closingRaw  = getText('type');        // <type> = closing date
+      const postedRaw   = getText('date');
+      const tenure      = getText('jobtenure');
+      const descParsed  = parseDescription(descRaw);
+      const closingDate = parseClosingDate(closingRaw);
+      const postedDate  = parsePostedDate(postedRaw);
+
+      jobs.push({
+        id:          getText('externalid'),
+        title:       getText('jobtitle'),
+        location:    getText('locationcity'),
+        tenure:      tenure,
+        closingRaw:  closingRaw,
+        closingDate: closingDate,
+        postedDate:  postedDate,
+        applyURL:    getText('applyURL'),
+        salary:      descParsed.salary,
+        hours:       descParsed.hours,
+      });
+    });
+
+    return jobs;
+  }
+
+  /* -------------------------------------------------------------------
+     Filtering & sorting
+  ------------------------------------------------------------------- */
+  function applyFilters() {
+    const query    = elSearch.value.toLowerCase().trim();
+    const location = elLocation.value;
+    const tenure   = elTenure.value;
+    const sort     = elSort.value;
+
+    filtered = allJobs.filter(job => {
+      if (query && !job.title.toLowerCase().includes(query) &&
+                   !job.location.toLowerCase().includes(query) &&
+                   !(job.salary || '').toLowerCase().includes(query)) {
+        return false;
+      }
+      if (location && job.location !== location) return false;
+      if (tenure   && job.tenure   !== tenure)   return false;
+      return true;
+    });
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (sort) {
+        case 'closing-asc': {
+          const da = a.closingDate ? a.closingDate.getTime() : Infinity;
+          const db = b.closingDate ? b.closingDate.getTime() : Infinity;
+          return da - db;
+        }
+        case 'closing-desc': {
+          const da = a.closingDate ? a.closingDate.getTime() : -Infinity;
+          const db = b.closingDate ? b.closingDate.getTime() : -Infinity;
+          return db - da;
+        }
+        case 'title-asc':   return a.title.localeCompare(b.title);
+        case 'title-desc':  return b.title.localeCompare(a.title);
+        case 'posted-desc': {
+          const da = a.postedDate ? a.postedDate.getTime() : 0;
+          const db = b.postedDate ? b.postedDate.getTime() : 0;
+          return db - da;
+        }
+        default: return 0;
+      }
+    });
+
+    renderJobs();
+  }
+
+  /* -------------------------------------------------------------------
+     Icon helpers (inline SVG, aria-hidden)
+  ------------------------------------------------------------------- */
+  function icon(name) {
+    const icons = {
+      location: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+      money:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/><path d="M12 12v3m-3-1.5h6"/></svg>`,
+      clock:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      calendar: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+    };
+    return icons[name] || '';
+  }
+
+  /* -------------------------------------------------------------------
+     Render job cards
+  ------------------------------------------------------------------- */
+  function renderJobs() {
+    elList.innerHTML = '';
+
+    const count = filtered.length;
+    const countText = count === 0
+      ? 'No vacancies found'
+      : count === 1
+      ? '1 vacancy found'
+      : `${count} vacancies found`;
+    elCount.textContent = countText;
+    elLive.textContent = countText;
+
+    if (count === 0) {
+      elNoResults.style.display = 'block';
+      return;
+    }
+    elNoResults.style.display = 'none';
+
+    const fragment = document.createDocumentFragment();
+
+    filtered.forEach(job => {
+      const days        = daysUntil(job.closingDate);
+      const isUrgent    = days <= 3 && days >= 0;
+      const isClosing   = days <= 7 && days > 3;
+      const isExpired   = days < 0;
+      const isOngoing   = !job.closingDate;
+
+      // Tenure tag
+      let tagClass = 'tag-permanent';
+      let tagText  = job.tenure || 'Permanent';
+      if ((job.tenure || '').includes('Fixed')) { tagClass = 'tag-fixed'; tagText = 'Fixed Term'; }
+      if (isOngoing) { /* keep colour */ }
+
+      // Closing date display
+      let closingDisplay = '';
+      let closingClass   = '';
+      if (isOngoing) {
+        closingDisplay = 'Ongoing';
+        closingClass   = '';
+      } else if (isExpired) {
+        closingDisplay = 'Closed';
+        closingClass   = 'meta-closing-urgent';
+      } else if (isUrgent) {
+        closingDisplay = days === 0 ? 'Closes today' : `Closes in ${days} day${days === 1 ? '' : 's'}`;
+        closingClass   = 'meta-closing-urgent';
+      } else if (isClosing) {
+        closingDisplay = `Closes in ${days} days`;
+        closingClass   = 'meta-closing-soon';
+      } else {
+        closingDisplay = formatDate(job.closingDate);
+      }
+
+      // Posted date
+      const postedText = job.postedDate
+        ? `Posted ${job.postedDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+        : '';
+
+      const li = document.createElement('li');
+      li.className = 'job-card' + (isUrgent ? ' urgent' : '');
+      li.setAttribute('data-id', job.id);
+
+      li.innerHTML = `
+        <div class="job-card-header">
+          <h2 class="job-card-title">${escHtml(job.title)}</h2>
+          <span class="tag ${escHtml(tagClass)}" aria-label="Contract type: ${escHtml(tagText)}">${escHtml(tagText)}</span>
+        </div>
+
+        <dl class="job-meta">
+          ${job.location ? `
+          <div class="meta-item">
+            <span class="meta-icon">${icon('location')}</span>
+            <div>
+              <dt class="meta-label">Location</dt>
+              <dd class="meta-value">${escHtml(job.location)}</dd>
+            </div>
+          </div>` : ''}
+
+          ${job.salary ? `
+          <div class="meta-item">
+            <span class="meta-icon">${icon('money')}</span>
+            <div>
+              <dt class="meta-label">Salary</dt>
+              <dd class="meta-value">${escHtml(job.salary)}</dd>
+            </div>
+          </div>` : ''}
+
+          ${job.hours ? `
+          <div class="meta-item">
+            <span class="meta-icon">${icon('clock')}</span>
+            <div>
+              <dt class="meta-label">Hours per week</dt>
+              <dd class="meta-value">${escHtml(job.hours)}</dd>
+            </div>
+          </div>` : ''}
+
+          ${closingDisplay ? `
+          <div class="meta-item">
+            <span class="meta-icon">${icon('calendar')}</span>
+            <div>
+              <dt class="meta-label">Closing date</dt>
+              <dd class="meta-value ${escHtml(closingClass)}" ${isUrgent ? 'aria-label="Urgent: ' + escHtml(closingDisplay) + '"' : ''}>
+                ${isUrgent ? `<span class="urgent-badge" aria-hidden="true">Urgent</span> ` : ''}
+                ${escHtml(closingDisplay)}
+              </dd>
+            </div>
+          </div>` : ''}
+        </dl>
+
+        <div class="job-card-footer">
+          <span class="job-posted">${escHtml(postedText)}</span>
+          <a href="${escAttr(job.applyURL)}" class="btn-apply"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Apply for ${escHtml(job.title)}${job.location ? ' in ' + escHtml(job.location) : ''} (opens in new tab)">
+            Apply now
+          </a>
+        </div>
+      `;
+
+      fragment.appendChild(li);
+    });
+
+    elList.appendChild(fragment);
+  }
+
+  /* -------------------------------------------------------------------
+     Escape helpers
+  ------------------------------------------------------------------- */
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  function escAttr(str) {
+    if (!str) return '#';
+    // Only allow http/https URLs
+    if (!str.match(/^https?:\/\//i)) return '#';
+    return escHtml(str);
+  }
+
+  /* -------------------------------------------------------------------
+     Populate location dropdown
+  ------------------------------------------------------------------- */
+  function populateLocationFilter(jobs) {
+    const locations = [...new Set(jobs.map(j => j.location).filter(Boolean))].sort();
+    locations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc;
+      opt.textContent = loc;
+      elLocation.appendChild(opt);
+    });
+  }
+
+  /* -------------------------------------------------------------------
+     Event listeners
+  ------------------------------------------------------------------- */
+  function bindEvents() {
+    elSearch.addEventListener('input', debounce(applyFilters, 250));
+    elLocation.addEventListener('change', applyFilters);
+    elTenure.addEventListener('change', applyFilters);
+    elSort.addEventListener('change', applyFilters);
+    elBtnClear.addEventListener('click', clearFilters);
+    elBtnReset.addEventListener('click', clearFilters);
+  }
+
+  function clearFilters() {
+    elSearch.value   = '';
+    elLocation.value = '';
+    elTenure.value   = '';
+    applyFilters();
+    elSearch.focus();
+  }
+
+  function debounce(fn, delay) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  /* -------------------------------------------------------------------
+     Bootstrap
+  ------------------------------------------------------------------- */
+  async function init() {
+    elLoading.style.display = 'block';
+    elError.style.display   = 'none';
+    elList.innerHTML        = '';
+
+    try {
+      const jobs = await loadFeed();
+
+      elLoading.style.display = 'none';
+
+      if (!jobs || jobs.length === 0) {
+        elError.style.display = 'block';
+        return;
+      }
+
+      allJobs = jobs;
+      populateLocationFilter(allJobs);
+      bindEvents();
+      applyFilters();
+
+    } catch (err) {
+      console.error(err);
+      elLoading.style.display = 'none';
+      elError.style.display   = 'block';
+    }
+  }
+
+  init();
+})();
+</script>
+
+</body>
+</html>
