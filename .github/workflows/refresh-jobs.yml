@@ -16,28 +16,32 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      - name: Fetch live jobs feed
+      - name: Fetch jobs page
         run: |
-          HTTP_CODE=$(curl -L -s -o /tmp/jobs-feed-new.xml -w "%{http_code}" \
-            --retry 3 --retry-delay 5 \
-            -H "Accept: application/xml, text/xml, */*" \
-            -H "User-Agent: Mozilla/5.0" \
-            "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055")
-          echo "HTTP status: ${HTTP_CODE}"
-          echo "File size: $(wc -c < /tmp/jobs-feed-new.xml) bytes"
-          if [ "${HTTP_CODE}" != "200" ]; then
-            echo "ERROR: unexpected HTTP status ${HTTP_CODE}"
-            exit 1
-          fi
+          curl -L --compressed --retry 3 --retry-delay 5 \
+            -H "Accept: text/html,application/xhtml+xml,*/*" \
+            -H "User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" \
+            -o /tmp/jobs-page.html \
+            "https://careers.gloucestershire.gov.uk/go/All-City-Council-Jobs/8557855/"
+          echo "=== File size: $(wc -c < /tmp/jobs-page.html) bytes ==="
+          echo "=== First 5 lines ==="
+          head -5 /tmp/jobs-page.html
+          echo "=== End ==="
 
-      - name: Validate feed before overwriting
+      - name: Install Python deps
+        run: pip3 install --quiet beautifulsoup4 lxml
+
+      - name: Scrape HTML and generate XML
         run: |
-          echo "--- Fetched content (first 20 lines) ---"
-          head -20 /tmp/jobs-feed-new.xml
-          echo "--- End preview ---"
-          # Must be a valid jobs XML feed (has <jobs> root) — empty feeds are allowed
-          if ! grep -q "<jobs" /tmp/jobs-feed-new.xml; then
-            echo "ERROR: fetched file does not look like a jobs XML feed — aborting to preserve existing feed"
+          python3 scripts/scrape_jobs.py /tmp/jobs-page.html /tmp/jobs-feed-new.xml
+          echo "=== Generated XML ==="
+          cat /tmp/jobs-feed-new.xml
+          echo "=== End ==="
+
+      - name: Validate and copy feed
+        run: |
+          if ! grep -q "<jobs" /tmp/jobs-feed-new.xml 2>/dev/null; then
+            echo "ERROR: scraper did not produce a valid jobs XML file"
             exit 1
           fi
           JOB_COUNT=$(grep -c '<job>' /tmp/jobs-feed-new.xml || true)
@@ -50,4 +54,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add jobs/jobs-feed.xml
           git diff --cached --quiet || git commit -m "chore: refresh jobs feed [skip ci]"
-          git push
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

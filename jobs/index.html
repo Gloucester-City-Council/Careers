@@ -668,9 +668,7 @@
         return el ? el.textContent.trim() : '';
       };
 
-      // Only show Gloucester City Council jobs — identified by /GloucesterCity/ in the apply URL
       const applyURL = getText('applyURL');
-      if (!applyURL.includes('/GloucesterCity/')) return;
 
       const descRaw     = getText('description');
       const closingRaw  = getText('type');        // <type> = closing date
