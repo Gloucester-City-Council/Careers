@@ -88,24 +88,21 @@ for row in rows:
         or text(row, 'span.jobLocation')
         or 'Gloucester'
     )
-    department = (
+    # On this platform span.jobFacility = contract type, span.jobShifttype = closing date
+    contract_type = (
         text(row, 'span.jobFacility.hidden-phone')
         or text(row, 'span.jobFacility')
         or text(row, 'span.jobDepartment')
-        or ''
+        or 'Permanent'
     )
-    shift = (
+    # Extract just the date portion from span.jobShifttype (e.g. "08/03/2026")
+    shift_raw = (
         text(row, 'span.jobShifttype.hidden-phone')
         or text(row, 'span.jobShifttype')
         or ''
     )
-    # Closing date — look for any td/span containing a date-like string
-    closing = ''
-    for td in row.find_all('td'):
-        t = td.get_text(' ', strip=True)
-        if re.search(r'\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{1,2}\s+\w+\s+\d{4}', t):
-            closing = t
-            break
+    date_match = re.search(r'\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}', shift_raw)
+    closing = date_match.group(0) if date_match else ''
 
     if not title and not apply_url:
         continue  # blank / spacer row
@@ -117,10 +114,8 @@ for row in rows:
             job_id = m.group(1)
 
     desc_parts = []
-    if department:
-        desc_parts.append(f'Department: {department}')
-    if shift:
-        desc_parts.append(f'Type: {shift}')
+    if contract_type and contract_type != 'Permanent':
+        desc_parts.append(f'Contract: {contract_type}')
     desc_html = '<ul>' + ''.join(f'<li>{p}</li>' for p in desc_parts) + '</ul>' if desc_parts else ''
 
     print(f'  Job: {title!r}  location={location!r}  closing={closing!r}  url={apply_url!r}', flush=True)
@@ -129,7 +124,7 @@ for row in rows:
         'externalid':   job_id,
         'jobtitle':     title,
         'locationcity': location,
-        'jobtenure':    shift or 'Permanent',
+        'jobtenure':    contract_type,
         'type':         closing,
         'date':         now_str,
         'applyURL':     apply_url,
