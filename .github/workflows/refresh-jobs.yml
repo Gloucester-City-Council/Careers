@@ -23,7 +23,7 @@ jobs:
             -H "User-Agent: Mozilla/5.0" \
             --dump-header /tmp/jobs-feed-headers.txt \
             -o /tmp/jobs-feed-new.xml \
-            "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055"
+            "https://careers.gloucestershire.gov.uk/go/All-City-Council-Jobs/8557855/"
           echo "=== Response headers ==="
           cat /tmp/jobs-feed-headers.txt
           echo "=== File size: $(wc -c < /tmp/jobs-feed-new.xml) bytes ==="
@@ -31,19 +31,26 @@ jobs:
           head -50 /tmp/jobs-feed-new.xml
           echo "=== End ==="
 
-      - name: Validate feed before overwriting
+      - name: Validate and parse feed
         run: |
-          echo "--- Fetched content (first 20 lines) ---"
-          head -20 /tmp/jobs-feed-new.xml
+          echo "--- File size: $(wc -c < /tmp/jobs-feed-new.xml) bytes ---"
+          echo "--- First 50 lines of response ---"
+          head -50 /tmp/jobs-feed-new.xml
           echo "--- End preview ---"
-          # Must be a valid jobs XML feed (has <jobs> root) — empty feeds are allowed
-          if ! grep -q "<jobs" /tmp/jobs-feed-new.xml; then
-            echo "ERROR: fetched file does not look like a jobs XML feed — aborting to preserve existing feed"
+
+          # Detect format
+          if grep -q "<jobs" /tmp/jobs-feed-new.xml 2>/dev/null; then
+            echo "Detected: XML jobs feed"
+            JOB_COUNT=$(grep -c '<job>' /tmp/jobs-feed-new.xml || true)
+            echo "Validation passed — ${JOB_COUNT} job(s) found"
+            cp /tmp/jobs-feed-new.xml jobs/jobs-feed.xml
+          elif grep -qi "<html" /tmp/jobs-feed-new.xml 2>/dev/null; then
+            echo "Detected: HTML page — scraping required (not yet implemented)"
+            exit 1
+          else
+            echo "ERROR: unrecognised response format — aborting to preserve existing feed"
             exit 1
           fi
-          JOB_COUNT=$(grep -c '<job>' /tmp/jobs-feed-new.xml || true)
-          echo "Validation passed — ${JOB_COUNT} job(s) found"
-          cp /tmp/jobs-feed-new.xml jobs/jobs-feed.xml
 
       - name: Commit if changed
         run: |
