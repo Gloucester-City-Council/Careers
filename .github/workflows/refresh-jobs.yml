@@ -18,8 +18,17 @@ jobs:
 
       - name: Fetch live jobs feed
         run: |
-          curl -f --retry 3 --retry-delay 5 -o /tmp/jobs-feed-new.xml \
-            "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055"
+          HTTP_CODE=$(curl -L -s -o /tmp/jobs-feed-new.xml -w "%{http_code}" \
+            --retry 3 --retry-delay 5 \
+            -H "Accept: application/xml, text/xml, */*" \
+            -H "User-Agent: Mozilla/5.0" \
+            "https://careers.gloucestershire.gov.uk/GloucesterCity/jobs.xml?feedId=354055")
+          echo "HTTP status: ${HTTP_CODE}"
+          echo "File size: $(wc -c < /tmp/jobs-feed-new.xml) bytes"
+          if [ "${HTTP_CODE}" != "200" ]; then
+            echo "ERROR: unexpected HTTP status ${HTTP_CODE}"
+            exit 1
+          fi
 
       - name: Validate feed before overwriting
         run: |
