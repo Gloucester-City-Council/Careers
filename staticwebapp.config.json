@@ -8,6 +8,6 @@
   ],
   "navigationFallback": {
     "rewrite": "/jobs/index.html",
-    "exclude": ["/jobs/*", "/assets/*"]
+    "exclude": ["/jobs/*", "/assets/*", "/api/*"]
   }
 }

@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Gloucester City Council Careers",
+  "dependencies": {
+    "@azure/storage-blob": "^12.17.0",
+    "node-html-parser": "^6.1.12"
+  }
+}
